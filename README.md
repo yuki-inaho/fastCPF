@@ -2,7 +2,7 @@
 
 Fast Component-wise Peak-Finding (CPF) clustering in Rust with Python bindings.
 
-Official Implementation Repository: [CPFcluster](https://github.com/gvdr/CPFcluster)
+Official Implementation Repository: [CPFcluster](https://github.com/tobinjo96/CPFcluster)
 
 Original Paper: [A Theoretical Analysis of Density Peaks Clustering and the Component-wise Peak-Finding Algorithm](https://www.tara.tcd.ie/items/bbde36f5-a6e4-4f26-b611-f16aff652732) (Tobin & Zhang, IEEE TPAMI 2024)
 
