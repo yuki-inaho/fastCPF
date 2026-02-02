@@ -1,0 +1,27 @@
+[package]
+name = "fastcpf"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Fast Component-wise Peak-Finding (CPF) clustering algorithm with Rust/PyO3"
+authors = ["yuki-inaho"]
+repository = "https://github.com/yuki-inaho/fastCPF"
+keywords = ["clustering", "machine-learning", "density-based", "cpf"]
+categories = ["science", "algorithms"]
+
+[lib]
+name = "fastcpf"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.21", features = ["extension-module"] }
+numpy = "0.21"
+kdtree = "0.8.0"
+rayon = "1.11.0"
+
+[dev-dependencies]
+approx = "0.5.1"
+
+[profile.release]
+lto = true
+codegen-units = 1
