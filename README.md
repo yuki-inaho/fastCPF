@@ -10,11 +10,23 @@ Original Paper: [A Theoretical Analysis of Density Peaks Clustering and the Comp
 
 ## Installation
 
+### pip
+
 ```bash
 pip install fastcpf
 ```
 
+### uv (from source)
+
+```bash
+git clone https://github.com/yuki-inaho/fastCPF.git
+cd fastCPF
+uv sync --all-extras
+```
+
 ## Usage
+
+### Basic API
 
 ```python
 from fastcpf import FastCPF
@@ -26,6 +38,19 @@ model = FastCPF(min_samples=10, rho=0.4)
 model.fit(X)
 
 print(f"Clusters: {model.n_clusters_}, Outliers: {model.n_outliers_}")
+```
+
+### Running Examples
+
+```bash
+# Basic clustering example
+uv run python examples/basic_clustering.py
+
+# 4-panel visualization (generates examples/fastcpf_viz.png)
+uv run python examples/visualization.py
+
+# Benchmark
+uv run python examples/benchmark.py
 ```
 
 ## Parameters
