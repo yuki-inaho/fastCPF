@@ -27,10 +27,6 @@ impl Dataset {
         self.d
     }
 
-    pub fn as_slice(&self) -> &[f32] {
-        &self.data
-    }
-
     pub fn row(&self, i: usize) -> &[f32] {
         let start = i * self.d;
         &self.data[start..start + self.d]

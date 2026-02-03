@@ -1,0 +1,41 @@
+name: Release Wheels
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: x86_64
+          args: --release --out dist -i python3.8 -i python3.9 -i python3.10 -i python3.11 -i python3.12
+          manylinux: auto
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux-x86_64
+          path: dist
+
+  release:
+    name: Upload wheels to GitHub Release
+    runs-on: ubuntu-latest
+    needs: linux
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: List wheels
+        run: ls -la dist/
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl

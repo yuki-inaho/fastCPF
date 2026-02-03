@@ -24,6 +24,19 @@ cd fastCPF
 uv sync --all-extras
 ```
 
+### From GitHub (requires Rust)
+
+```bash
+pip install 'fastcpf @ git+https://github.com/yuki-inaho/fastCPF'
+```
+
+### From Release Assets (pre-built wheels)
+
+```bash
+# Download a wheel matching your Python and platform from GitHub Releases
+pip install https://github.com/yuki-inaho/fastCPF/releases/download/v1.0.0/fastcpf-1.0.0-cp312-cp312-manylinux_2_28_x86_64.whl
+```
+
 ## Usage
 
 ### Basic API

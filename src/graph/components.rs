@@ -6,8 +6,10 @@ use crate::types::OUTLIER;
 /// Outlier filtering strategies (paper vs. original implementation).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OutlierFilter {
+    #[allow(dead_code)]
     None,
     EdgeCount,
+    #[allow(dead_code)]
     ComponentSize,
 }
 
