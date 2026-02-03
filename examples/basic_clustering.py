@@ -15,7 +15,7 @@ def generate_data(n_per_cluster=150, random_state=42):
     # Cluster 2 (Bottom left)
     c2 = np.random.randn(n_per_cluster, 2) * 0.3 + [-1.0, -0.8]
     # Cluster 3 (Bottom center - close to cluster 2, bridge structure)
-    c3 = np.random.randn(n_per_cluster, 2) * 0.3 + [-0.2, -0.7]
+    c3 = np.random.randn(n_per_cluster, 2) * 0.3 + [-0.1, -0.7]
 
     X = np.vstack([c1, c2, c3])
     y_true = np.array([0] * n_per_cluster + [1] * n_per_cluster + [2] * n_per_cluster)

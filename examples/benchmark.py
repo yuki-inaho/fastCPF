@@ -46,7 +46,9 @@ def run_fastcpf(X, min_samples, rho, alpha, cutoff):
 def run_python_cpf(X, min_samples, rho, alpha, cutoff):
     """Run clustering using pure Python backend."""
     start = time.perf_counter()
-    cpf = CPFcluster(min_samples=min_samples, rho=[rho], alpha=[alpha], cutoff=cutoff, n_jobs=1)
+    cpf = CPFcluster(
+        min_samples=min_samples, rho=[rho], alpha=[alpha], cutoff=cutoff, n_jobs=1
+    )
     cpf.fit(X)
     labels = list(cpf.clusterings.values())[0]
     elapsed = time.perf_counter() - start

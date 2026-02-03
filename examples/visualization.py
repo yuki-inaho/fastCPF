@@ -29,7 +29,7 @@ def generate_data(n_per_cluster=150, random_state=42):
     # Cluster 2 (Bottom left)
     c2 = np.random.randn(n_per_cluster, 2) * 0.3 + [-1.0, -0.8]
     # Cluster 3 (Bottom center - close to cluster 2, bridge structure)
-    c3 = np.random.randn(n_per_cluster, 2) * 0.3 + [-0.2, -0.7]
+    c3 = np.random.randn(n_per_cluster, 2) * 0.3 + [-0.1, -0.7]
 
     X = np.vstack([c1, c2, c3])
     y_true = np.array([0] * n_per_cluster + [1] * n_per_cluster + [2] * n_per_cluster)
@@ -185,30 +185,30 @@ def plot_four_panels(X, labels, adj, rho, delta, big_brother, output_file):
         zorder=10,
     )
 
-    # Draw Assignment Path (trace from lowest density point to center)
-    start_node = np.argsort(rho)[0]
-    path = [start_node]
-    curr = start_node
-    for _ in range(20):  # Trace up to 20 steps
-        parent = big_brother[curr]
-        if parent == -1 or parent == curr:
-            break
-        path.append(parent)
-        curr = parent
+    ## Draw Assignment Path (trace from lowest density point to center)
+    # start_node = np.argsort(rho)[0]
+    # path = [start_node]
+    # curr = start_node
+    # for _ in range(20):  # Trace up to 20 steps
+    #    parent = big_brother[curr]
+    #    if parent == -1 or parent == curr:
+    #        break
+    #    path.append(parent)
+    #    curr = parent
 
-    # Draw arrow path
-    if len(path) > 1:
-        path_coords = X[path]
-        ax.plot(path_coords[:, 0], path_coords[:, 1], c="gold", linewidth=3, zorder=20)
-        # Add arrow head at the end
-        if len(path_coords) > 1:
-            ax.annotate(
-                "",
-                xy=(path_coords[-1, 0], path_coords[-1, 1]),
-                xytext=(path_coords[-2, 0], path_coords[-2, 1]),
-                arrowprops=dict(arrowstyle="->", color="gold", lw=3),
-                zorder=20,
-            )
+    ## Draw arrow path
+    # if len(path) > 1:
+    #    path_coords = X[path]
+    #    ax.plot(path_coords[:, 0], path_coords[:, 1], c="gold", linewidth=3, zorder=20)
+    #    # Add arrow head at the end
+    #    if len(path_coords) > 1:
+    #        ax.annotate(
+    #            "",
+    #            xy=(path_coords[-1, 0], path_coords[-1, 1]),
+    #            xytext=(path_coords[-2, 0], path_coords[-2, 1]),
+    #            arrowprops=dict(arrowstyle="->", color="gold", lw=3),
+    #            zorder=20,
+    #        )
 
     ax.autoscale()
     ax.set_xticks([])
@@ -231,11 +231,17 @@ def main():
     )
     parser.add_argument("--n-points", type=int, default=150, help="Points per cluster")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    parser.add_argument("--k", type=int, default=10, help="Number of neighbors for k-NN graph")
+    parser.add_argument(
+        "--k", type=int, default=10, help="Number of neighbors for k-NN graph"
+    )
     args = parser.parse_args()
 
     # Output to examples directory
-    script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in dir() else 'examples'
+    script_dir = (
+        os.path.dirname(os.path.abspath(__file__))
+        if "__file__" in dir()
+        else "examples"
+    )
     output_path = os.path.join(script_dir, args.output)
 
     # 1. Generate Data
