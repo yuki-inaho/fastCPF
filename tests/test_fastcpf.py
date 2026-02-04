@@ -95,12 +95,13 @@ class TestFastCPF:
         """Test that parameter getters work."""
         from fastcpf import FastCPF
 
-        model = FastCPF(min_samples=15, rho=0.5, alpha=1.2, cutoff=2)
+        model = FastCPF(min_samples=15, rho=0.5, alpha=1.2, cutoff=2, density_method="median")
 
         assert model.min_samples == 15
         assert model.rho == pytest.approx(0.5)
         assert model.alpha == pytest.approx(1.2)
         assert model.cutoff == 2
+        assert model.density_method == "median"
 
     def test_knn_backends(self, sample_data):
         """Test both k-NN backends produce similar results."""
@@ -124,6 +125,31 @@ class TestFastCPF:
 
         with pytest.raises(ValueError, match="Unsupported knn_backend"):
             FastCPF(knn_backend="invalid")
+
+    def test_density_method_median(self, sample_data):
+        """Test median-based density proxy runs."""
+        from fastcpf import FastCPF
+
+        X, _ = sample_data
+        model = FastCPF(min_samples=10, density_method="median")
+        model.fit(X)
+        assert model.labels_.shape == (len(X),)
+
+    def test_density_method_mean(self, sample_data):
+        """Test mean-based density proxy runs."""
+        from fastcpf import FastCPF
+
+        X, _ = sample_data
+        model = FastCPF(min_samples=10, density_method="mean")
+        model.fit(X)
+        assert model.labels_.shape == (len(X),)
+
+    def test_invalid_density_method_raises(self):
+        """Test that invalid density method raises error."""
+        from fastcpf import FastCPF
+
+        with pytest.raises(ValueError, match="Unsupported density_method"):
+            FastCPF(density_method="invalid")
 
     def test_clustering_quality(self, sample_data):
         """Test that clustering quality is reasonable."""

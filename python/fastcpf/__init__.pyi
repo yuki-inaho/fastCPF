@@ -23,6 +23,10 @@ class FastCPF:
         Outlier filter threshold (minimum edge count).
     knn_backend : {"kd", "brute"}, default="kd"
         Backend for k-NN search. "kd" uses KD-tree, "brute" uses brute-force.
+    density_method : {"rk", "median", "mean"}, default="rk"
+        Density proxy used for peak finding. "rk" uses r_k(x). "median" uses
+        the median of kNN distances (excluding self). "mean" uses the mean of
+        kNN distances (excluding self).
 
     Attributes
     ----------
@@ -65,6 +69,7 @@ class FastCPF:
         alpha: float = 1.0,
         cutoff: int = 1,
         knn_backend: Literal["kd", "brute"] = "kd",
+        density_method: Literal["rk", "median", "mean"] = "rk",
     ) -> None: ...
     def fit(self, x: npt.NDArray[np.float32]) -> None:
         """
@@ -148,6 +153,11 @@ class FastCPF:
     @property
     def cutoff(self) -> int:
         """Outlier filter threshold."""
+        ...
+
+    @property
+    def density_method(self) -> str:
+        """Density proxy: "rk", "median", or "mean"."""
         ...
 
 __all__: list[str]

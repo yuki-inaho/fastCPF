@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fastcpf"
-version = "1.0.1"
+version = "1.1.0"
 description = "Fast Component-wise Peak-Finding (CPF) clustering algorithm"
 readme = "README.md"
 license = { file = "LICENSE" }

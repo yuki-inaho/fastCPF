@@ -15,7 +15,7 @@ pub struct BigBrotherResult {
 /// Compute Big Brother for all components (Definition 2).
 pub fn compute_big_brother(
     dataset: &Dataset,
-    knn_radius: &[f32],
+    density_radius: &[f32],
     components: &[i32],
     k: usize,
 ) -> BigBrotherResult {
@@ -39,7 +39,7 @@ pub fn compute_big_brother(
         .map(|cc_idx| {
             let mut radius_cc = Vec::with_capacity(cc_idx.len());
             for &gi in cc_idx {
-                radius_cc.push(knn_radius[gi]);
+                radius_cc.push(density_radius[gi]);
             }
             let bb = compute_big_brother_for_component(dataset, cc_idx, &radius_cc, k);
             (cc_idx.clone(), bb)

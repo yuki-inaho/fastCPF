@@ -34,7 +34,7 @@ pip install 'fastcpf @ git+https://github.com/yuki-inaho/fastCPF'
 
 ```bash
 # Download a wheel matching your Python and platform from GitHub Releases
-pip install https://github.com/yuki-inaho/fastCPF/releases/download/v1.0.0/fastcpf-1.0.0-cp312-cp312-manylinux_2_28_x86_64.whl
+pip install https://github.com/yuki-inaho/fastCPF/releases/download/v1.1.0/fastcpf-1.1.0-cp312-cp312-manylinux_2_28_x86_64.whl
 ```
 
 ## Usage
@@ -73,6 +73,7 @@ uv run python examples/benchmark.py
 - `alpha`: Edge cutoff (default: 1.0)
 - `cutoff`: Outlier threshold (default: 1)
 - `knn_backend`: "kd" or "brute" (default: "kd")
+- `density_method`: "rk", "median", or "mean" (default: "rk")
 
 ## Attributes
 

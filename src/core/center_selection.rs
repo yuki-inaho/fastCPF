@@ -6,7 +6,7 @@ use crate::graph::WeightedGraph;
 pub fn select_centers_for_component(
     graph: &WeightedGraph,
     cc_idx: &[usize],
-    cc_knn_radius: &[f32],
+    cc_density_radius: &[f32],
     peaked: &[f32],
     rho: f32,
     alpha: f32,
@@ -34,7 +34,7 @@ pub fn select_centers_for_component(
             graph,
             cc_idx,
             &global_to_local,
-            cc_knn_radius,
+            cc_density_radius,
             prop_cent,
             &not_tested,
             edge_threshold,
@@ -43,20 +43,20 @@ pub fn select_centers_for_component(
         }
 
         // Definition 10: V_{x*} using rho and dimension.
-        let v_cutoff = cc_knn_radius[prop_cent] / rho.powf(1.0 / dim as f32);
-        let e_cutoff = cc_knn_radius[prop_cent] / alpha;
+        let v_cutoff = cc_density_radius[prop_cent] / rho.powf(1.0 / dim as f32);
+        let e_cutoff = cc_density_radius[prop_cent] / alpha;
         edge_threshold = edge_threshold.min(e_cutoff);
 
         let mut cc_cut_idx: Vec<usize> = Vec::new();
-        if cc_knn_radius[prop_cent] > 0.0 {
+        if cc_density_radius[prop_cent] > 0.0 {
             for i in 0..nc {
-                if cc_knn_radius[i] < v_cutoff {
+                if cc_density_radius[i] < v_cutoff {
                     cc_cut_idx.push(i);
                 }
             }
         } else {
             for i in 0..nc {
-                if cc_knn_radius[i] <= v_cutoff {
+                if cc_density_radius[i] <= v_cutoff {
                     cc_cut_idx.push(i);
                 }
             }
@@ -156,23 +156,23 @@ fn should_stop_by_radius(
     graph: &WeightedGraph,
     cc_idx: &[usize],
     global_to_local: &[i32],
-    cc_knn_radius: &[f32],
+    cc_density_radius: &[f32],
     prop_cent: usize,
     not_tested: &[bool],
     edge_threshold: f32,
 ) -> bool {
     let mut max_tested = f32::NEG_INFINITY;
-    for (i, &r) in cc_knn_radius.iter().enumerate() {
+    for (i, &r) in cc_density_radius.iter().enumerate() {
         if !not_tested[i] {
             if r > max_tested {
                 max_tested = r;
             }
         }
     }
-    if cc_knn_radius[prop_cent] > max_tested {
+    if cc_density_radius[prop_cent] > max_tested {
         let mut cc_level_set: Vec<usize> = Vec::new();
-        for i in 0..cc_knn_radius.len() {
-            if cc_knn_radius[i] <= cc_knn_radius[prop_cent] {
+        for i in 0..cc_density_radius.len() {
+            if cc_density_radius[i] <= cc_density_radius[prop_cent] {
                 cc_level_set.push(i);
             }
         }

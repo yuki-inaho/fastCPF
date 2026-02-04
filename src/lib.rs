@@ -12,15 +12,15 @@ mod math;
 mod types;
 
 use crate::core::{
-    assign_labels_for_component, compute_big_brother, compute_peak_score,
-    select_centers_for_component, BigBrotherResult,
+    assign_labels_for_component, compute_big_brother, compute_density_radius,
+    compute_peak_score, select_centers_for_component, BigBrotherResult,
 };
 use crate::data::Dataset;
 use crate::graph::{
     apply_outlier_filter, build_mutual_knn_graph, extract_components, knn_search, KnnBackend,
     KnnResult, OutlierFilter, WeightedGraph,
 };
-use crate::types::OUTLIER;
+use crate::types::{DensityMethod, OUTLIER};
 
 /// FastCPF: scikit-learn style API for CPF clustering.
 #[pyclass]
@@ -31,6 +31,7 @@ pub struct FastCPF {
     alpha: f32,
     cutoff: usize,
     knn_backend: KnnBackend,
+    density_method: DensityMethod,
 
     // Results (None before fit)
     labels: Option<Vec<i32>>,
@@ -54,14 +55,16 @@ impl FastCPF {
     /// * `alpha` - Edge cutoff parameter (default: 1.0)
     /// * `cutoff` - Outlier filter threshold (default: 1)
     /// * `knn_backend` - k-NN backend: "kd" or "brute" (default: "kd")
+    /// * `density_method` - Density proxy: "rk", "median", or "mean" (default: "rk")
     #[new]
-    #[pyo3(signature = (min_samples=10, rho=0.4, alpha=1.0, cutoff=1, knn_backend="kd"))]
+    #[pyo3(signature = (min_samples=10, rho=0.4, alpha=1.0, cutoff=1, knn_backend="kd", density_method="rk"))]
     fn new(
         min_samples: usize,
         rho: f32,
         alpha: f32,
         cutoff: usize,
         knn_backend: &str,
+        density_method: &str,
     ) -> PyResult<Self> {
         let backend = match knn_backend.to_lowercase().as_str() {
             "kd" | "kdtree" => KnnBackend::KdTree,
@@ -73,6 +76,12 @@ impl FastCPF {
                 )))
             }
         };
+        let density_method = DensityMethod::from_str(density_method).ok_or_else(|| {
+            PyErr::new::<pyo3::exceptions::PyValueError, _>(format!(
+                "Unsupported density_method: '{}'. Use 'rk', 'median', or 'mean'.",
+                density_method
+            ))
+        })?;
 
         Ok(Self {
             min_samples,
@@ -80,6 +89,7 @@ impl FastCPF {
             alpha,
             cutoff,
             knn_backend: backend,
+            density_method,
             labels: None,
             n_clusters: None,
             knn_result: None,
@@ -102,6 +112,7 @@ impl FastCPF {
         // Step 1: k-NN search
         let knn = knn_search(&dataset, self.min_samples, self.knn_backend);
         let knn_radius = knn.radius.clone();
+        let density_radius = compute_density_radius(&knn, self.density_method);
 
         // Step 2: Build mutual k-NN graph
         let graph = build_mutual_knn_graph(&knn);
@@ -114,10 +125,10 @@ impl FastCPF {
             apply_outlier_filter(&graph, &raw_components, OutlierFilter::EdgeCount, self.cutoff);
 
         // Step 5: Compute Big Brother for each component
-        let bb = compute_big_brother(&dataset, &knn_radius, &components, self.min_samples);
+        let bb = compute_big_brother(&dataset, &density_radius, &components, self.min_samples);
 
         // Step 6: Compute peak scores
-        let peak_score = compute_peak_score(&bb.parent_dist, &knn_radius);
+        let peak_score = compute_peak_score(&bb.parent_dist, &density_radius);
 
         // Step 7: Select centers and assign labels for each component
         let mut labels = vec![OUTLIER; n];
@@ -140,10 +151,10 @@ impl FastCPF {
 
             // Extract component-local data
             let nc = cc_idx.len();
-            let mut cc_knn_radius = Vec::with_capacity(nc);
+            let mut cc_density_radius = Vec::with_capacity(nc);
             let mut cc_peaked = Vec::with_capacity(nc);
             for &gi in cc_idx {
-                cc_knn_radius.push(knn_radius[gi]);
+                cc_density_radius.push(density_radius[gi]);
                 cc_peaked.push(peak_score[gi]);
             }
 
@@ -151,7 +162,7 @@ impl FastCPF {
             let centers = select_centers_for_component(
                 &graph,
                 cc_idx,
-                &cc_knn_radius,
+                &cc_density_radius,
                 &cc_peaked,
                 self.rho,
                 self.alpha,
@@ -343,6 +354,11 @@ impl FastCPF {
     #[getter]
     fn cutoff(&self) -> usize {
         self.cutoff
+    }
+
+    #[getter]
+    fn density_method(&self) -> String {
+        self.density_method.as_str().to_string()
     }
 }
 
