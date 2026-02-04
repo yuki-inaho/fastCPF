@@ -1,6 +1,6 @@
 [package]
 name = "fastcpf"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "MIT"
 description = "Fast Component-wise Peak-Finding (CPF) clustering algorithm with Rust/PyO3"

@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "fastcpf"
-version = "1.0.0"
+version = "1.0.1"
 description = "Fast Component-wise Peak-Finding (CPF) clustering algorithm"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -27,7 +27,7 @@ classifiers = [
 ]
 keywords = ["clustering", "machine-learning", "density-based", "cpf"]
 dependencies = [
-    "numpy>=2.0.0",
+    "numpy>=1.20.0",
 ]
 
 [project.optional-dependencies]
